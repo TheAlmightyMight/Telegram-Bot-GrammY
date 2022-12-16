@@ -1,13 +1,12 @@
 import { Keyboard } from "grammy";
 
 const menuKeyboard = new Keyboard()
-  .text("Контакты")
-  .text("Отправить мне письмо по почте")
-  .text("Посмотреть резюме")
+  .text("Оставить заявку")
+  .text("Связаться")
   .row()
-  .text("Рассказать о себе")
-  .text("Прислать фотку котика")
-  .text("Some other option")
+  .text("Настройки")
+  .row()
+  .text("Полезные контакты")
   .oneTime()
   .resized(true);
 
