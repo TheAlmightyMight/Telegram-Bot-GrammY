@@ -1,4 +1,4 @@
-import { Bot, session } from "grammy";
+import { Bot, session, InlineKeyboard } from "grammy";
 import { conversations, createConversation } from "@grammyjs/conversations";
 import * as dotenv from "dotenv";
 import db from "./db.js";
@@ -14,28 +14,65 @@ const bot = new Bot(process.env.TOKEN);
 // Middleware
 
 // Keyboards
-// import menuKeyboard from "./keyboards/regular/menu.js";
+import menuKeyboard from "./keyboards/regular/menu.js";
 
 //Conversations
 import greeting from "./conversations/greeting.js";
+import complaint from "./conversations/complaint.js";
 
 bot.use(session({ initial: () => ({}) }));
 bot.use(conversations());
 bot.use(createConversation(greeting));
+bot.use(createConversation(complaint));
 
 // Commands
-bot.command("start", async ctx => {
-  ctx.reply("write enter");
+
+bot.command("complaint", async ctx => {
+  await ctx.conversation.enter("complaint");
 });
 
-bot.command("enter", async ctx => {
-  await ctx.reply("Entering conversation!");
+bot.command("start", async ctx => {
   await ctx.conversation.enter("greeting");
 });
 
-bot.on("message:text", ctx => {
+bot.on("message:text", async ctx => {
   console.log(ctx.message, ctx.chat);
-  ctx.reply("Yes.");
+  switch (ctx.message.text) {
+    case "menu": {
+      await ctx.reply("Здесь контакты", {
+        reply_markup: menuKeyboard,
+      });
+      break;
+    }
+    case "Оставить заявку": {
+      await ctx.conversation.enter("complaint");
+      break;
+    }
+    case "Связаться": {
+      break;
+    }
+    case "Настройки": {
+      break;
+    }
+    case "Полезные контакты": {
+      await ctx.reply("Здесь контакты", {
+        reply_markup: new InlineKeyboard().text("Обратно в меню", "menu").row(),
+      });
+      break;
+    }
+    default: {
+      await ctx.reply("yes");
+      break;
+    }
+  }
+});
+
+bot.on("callback_query", async ctx => {
+  if (ctx.callbackQuery.data === "menu") {
+    await ctx.reply("Меню", {
+      reply_markup: menuKeyboard,
+    });
+  }
 });
 
 await bot.start();
