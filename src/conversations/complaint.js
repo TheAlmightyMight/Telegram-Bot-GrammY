@@ -2,10 +2,17 @@ import db from "../db.js";
 import { InlineKeyboard } from "grammy";
 import menuKeyboard from "../keyboards/regular/menu.js";
 
+const CHAT_ID = "-1001302181106";
+
 async function complaint(conversation, ctx) {
   const stages = [
     {
-      keyboard: new InlineKeyboard().text("Stage1").text("back", "back").row(),
+      keyboard: new InlineKeyboard()
+        .text("Оставить заявку", "complaint")
+        .text("Поделиться предложением", "suggestion")
+        .row()
+        .text("back", "back")
+        .row(),
       stage: 1,
     },
     {
@@ -30,13 +37,11 @@ async function complaint(conversation, ctx) {
 
   while (true) {
     if (current.stage === 5) {
-      await ctx.reply("Перевожу обратно в меню.", {
+      await ctx.reply("Заявка создана, перевожу обратно в меню.", {
         reply_markup: menuKeyboard,
       });
       return;
     }
-
-    console.log(current, "current");
 
     await ctx.reply(String(current.stage), {
       reply_markup: current.keyboard,
@@ -44,6 +49,36 @@ async function complaint(conversation, ctx) {
 
     const context = await conversation.wait();
 
+    //suggestion
+    if (/suggestion/gi.test(context.update.callback_query.data)) {
+      console.log("yay", context.update.callback_query.data);
+      await context.reply("Опишите ваше предложение", {
+        reply_markup: new InlineKeyboard().text("Назад", "back"),
+      });
+
+      const contextLocal = await conversation.wait();
+      if (contextLocal.update.callback_query?.data === "back") {
+        continue;
+      }
+
+      if (contextLocal.message.text.length === 0) {
+        await contextLocal.reply("Ответьте пожалуйста текстом!");
+        continue;
+      } else {
+        // TODO: сохранить в бд и валидировать тип
+
+        await contextLocal.reply(
+          "Ваше предложение принято! Возвращаю вас в меню.",
+          {
+            reply_markup: menuKeyboard,
+          },
+        );
+
+        return;
+      }
+    }
+
+    //complaint back btn
     if (/back/.test(context.update.callback_query.data)) {
       if (current.stage === 1) {
         await ctx.reply("Перевожу обратно в меню.", {

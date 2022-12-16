@@ -1,9 +1,9 @@
 import { Bot, session, InlineKeyboard } from "grammy";
 import { conversations, createConversation } from "@grammyjs/conversations";
 import * as dotenv from "dotenv";
-import db from "./db.js";
+// import db from "./db.js";
 
-db.connect();
+// db.connect();
 dotenv.config();
 const bot = new Bot(process.env.TOKEN);
 
@@ -61,7 +61,7 @@ bot.on("message:text", async ctx => {
       break;
     }
     default: {
-      await ctx.reply("yes");
+      await ctx.reply(JSON.stringify(ctx.chat));
       break;
     }
   }
