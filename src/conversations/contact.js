@@ -2,7 +2,7 @@ import { InlineKeyboard } from "grammy";
 import db from "./db.js";
 
 async function contact(conversation, ctx) {
-  const CHAT_ID = "-1001302181106";
+  const CHAT_ID = "-834967948";
   const USER_ID = ctx.message.from.id;
   await ctx.reply("Способы свзяи", { reply_markup: mainContactKeyboard });
   const context = await conversation.wait();
@@ -26,7 +26,7 @@ async function contact(conversation, ctx) {
       }
 
       await localContext.reply(
-        `Новое сообщение от пользователя ${user.name} ${user.surname}\nCHAT_ID:${CHAT_ID}`,
+        `Новое сообщение:\n${ctx.message.text}\n.От пользователя ${user.name} ${user.surname}\nuser:${CHAT_ID}.`,
         {
           chat_id: CHAT_ID,
           reply_markup: new InlineKeyboard().text(
