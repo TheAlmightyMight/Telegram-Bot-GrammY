@@ -1,5 +1,7 @@
 import menuKeyboard from "../keyboards/regular/menu.js";
 import db from "../db.js";
+import nameValidator from "../utils/nameValidator.js";
+import phoneValidator from "../utils/phoneValidator.js";
 
 async function greeting(conversation, ctx) {
   const contacts = { phone: "", name: "", surname: "" };
@@ -31,7 +33,6 @@ async function greeting(conversation, ctx) {
     const {
       message: { text },
     } = await conversation.wait();
-    console.log(text);
     if (/\+\d{11}/g.test(text)) {
       contacts.phone = text;
       break;
@@ -42,11 +43,19 @@ async function greeting(conversation, ctx) {
     }
   }
 
-  console.log(contacts);
-
   await (async () => {
     await ctx.reply("Подождите...");
 
+    const user = await db.getUser({ id: ctx.message.from.id });
+    if (user) {
+      await ctx.reply(
+        "Я вас помню, вы уже зарегистрированы. Добро пожаловать!",
+        {
+          reply_markup: menuKeyboard,
+        },
+      );
+      return;
+    }
     await db.saveUser({ id: ctx.message.from.id, ...contacts });
   })();
 

@@ -22,6 +22,11 @@ class DataBase extends DB {
     await userModel.findOneAndUpdate(filter, newUser);
   }
 
+  async getUser(filter) {
+    const user = await userModel.findOne(filter).lean();
+    return user;
+  }
+
   saveComplaint() {}
   saveSuggestion() {}
   connect() {
