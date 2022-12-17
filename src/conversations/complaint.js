@@ -1,3 +1,4 @@
+import { Context } from "grammy";
 import db from "../db.js";
 import { InlineKeyboard } from "grammy";
 import menuKeyboard from "../keyboards/regular/menu.js";
@@ -14,7 +15,7 @@ async function complaint(conversation, ctx) {
         .text("back", "back")
         .row(),
       stage: 1,
-      message: "Выберит варианты",
+      message: "Выберите варианты",
     },
     {
       keyboard: new InlineKeyboard()
@@ -51,6 +52,7 @@ async function complaint(conversation, ctx) {
   let current = stages[0];
 
   while (true) {
+    console.log(current);
     if (current.stage === 5) {
       await db.saveComplaint(info);
       await ctx.reply("Заявка создана, перевожу обратно в меню.", {
@@ -65,17 +67,39 @@ async function complaint(conversation, ctx) {
 
     const context = await conversation.wait();
 
+    //complaint back btn
+    if (/back/.test(context?.update?.callback_query?.data)) {
+      if (current.stage === 1) {
+        await ctx.reply("Перевожу обратно в меню.", {
+          reply_markup: menuKeyboard,
+        });
+        return;
+      } else {
+        current = stages[current.stage - 2];
+        continue;
+      }
+    }
+
     if (current.stage === 2) {
-      info.address = context.message.text;
+      info.address = context?.message?.text;
     } else if (current.stage === 3) {
-      info.photo = context.message.text;
+      console.log(context.message);
+      if (context.message?.photo) {
+        info.photo = context.message.photo[0].file_id;
+      } else {
+        continue;
+      }
     } else if (current.stage === 4) {
-      info.reason = context.message.text;
+      console.log("DESCRIPTION!!!!!!!!");
+      if (context.message?.text.length < 15) {
+        await context.reply("Мало слов");
+        continue;
+      }
+      info.description = context.message.text;
     }
 
     //suggestion
-    if (/suggestion/gi.test(context.update.callback_query.data)) {
-      console.log("yay", context.update.callback_query.data);
+    if (/suggestion/gi.test(context?.update?.callback_query?.data)) {
       await context.reply("Опишите ваше предложение", {
         reply_markup: new InlineKeyboard().text("Назад", "back"),
       });
@@ -107,21 +131,6 @@ async function complaint(conversation, ctx) {
             reply_markup: menuKeyboard,
           },
         );
-
-        return;
-      }
-    }
-
-    //complaint back btn
-    if (/back/.test(context.update.callback_query.data)) {
-      if (current.stage === 1) {
-        await ctx.reply("Перевожу обратно в меню.", {
-          reply_markup: menuKeyboard,
-        });
-        return;
-      } else {
-        current = stages[current.stage - 2];
-        continue;
       }
     }
 

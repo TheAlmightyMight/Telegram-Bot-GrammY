@@ -31,7 +31,10 @@ class DataBase extends DB {
     return user;
   }
 
-  async getAllUsers() {}
+  async getAllUsers() {
+    const users = await userModel.find({});
+    return users;
+  }
 
   async saveComplaint(complaint) {
     await complaintModel.create(complaint);

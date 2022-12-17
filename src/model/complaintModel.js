@@ -5,7 +5,7 @@ const complaintSchema = new mongoose.Schema({
   issuer: userSchema,
   address: {
     type: String,
-    required: true,
+    default: "",
   },
   photo: {
     type: String,

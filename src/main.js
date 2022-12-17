@@ -1,6 +1,7 @@
 import { Bot, session, InlineKeyboard } from "grammy";
 import { conversations, createConversation } from "@grammyjs/conversations";
 import * as dotenv from "dotenv";
+import { hydrateFiles } from "@grammyjs/files";
 import db from "./db.js";
 
 db.connect();
@@ -22,7 +23,11 @@ import greeting from "./conversations/greeting.js";
 import complaint from "./conversations/complaint.js";
 import settings from "./conversations/settings.js";
 
+import { Context } from "grammy";
+const hasFile = Context.has.filterQuery("msg:photo");
+
 bot.use(session({ initial: () => ({}) }));
+
 bot.use(conversations());
 bot.use(createConversation(greeting));
 bot.use(createConversation(complaint));
