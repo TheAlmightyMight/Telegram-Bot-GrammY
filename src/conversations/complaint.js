@@ -2,9 +2,8 @@ import db from "../db.js";
 import { InlineKeyboard } from "grammy";
 import menuKeyboard from "../keyboards/regular/menu.js";
 
-const CHAT_ID = "-1001302181106";
-
 async function complaint(conversation, ctx) {
+  const CHAT_ID = "-1001302181106";
   const stages = [
     {
       keyboard: new InlineKeyboard()
@@ -61,11 +60,15 @@ async function complaint(conversation, ctx) {
         continue;
       }
 
-      if (contextLocal.message.text.length === 0) {
+      if (!contextLocal.message.text?.length) {
         await contextLocal.reply("Ответьте пожалуйста текстом!");
         continue;
       } else {
-        // TODO: сохранить в бд и валидировать тип
+        const user = await db.getUser({ id: contextLocal.message.from.id });
+        await db.saveSuggestion({
+          description: contextLocal.message.text,
+          user: user,
+        });
 
         await contextLocal.reply(
           "Ваше предложение принято! Возвращаю вас в меню.",

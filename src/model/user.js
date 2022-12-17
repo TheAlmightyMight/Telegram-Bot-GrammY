@@ -17,6 +17,10 @@ export const userSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  banned: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 export default mongoose.model("users", userSchema);

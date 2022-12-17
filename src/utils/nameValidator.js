@@ -1,6 +1,6 @@
 function nameValidator(name) {
-  if (/[а-я]/gi.test(text) && /^([А-Я][а-я]+)(\s[А-Я][а-я]+)$/g.test(text)) {
-    const arr = text.split(/\s/);
+  if (/[а-я]/gi.test(name) && /^([А-Я][а-я]+)(\s[А-Я][а-я]+)$/g.test(name)) {
+    const arr = name.split(/\s/);
 
     return arr;
   }

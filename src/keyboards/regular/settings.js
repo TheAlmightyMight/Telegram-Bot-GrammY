@@ -1,6 +1,6 @@
-import { Keyboard } from "grammy";
+import { InlineKeyboard } from "grammy";
 
-const settingsKeyboard = new Keyboard()
+const settingsKeyboard = new InlineKeyboard()
   .text("Сменить номер", "number")
   .text("Сменить имя", "name")
   .row()

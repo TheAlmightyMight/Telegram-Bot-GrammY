@@ -4,10 +4,13 @@ dotenv.config();
 
 // Models
 import userModel from "./model/user.js";
+import suggestionSchema from "./model/suggestion.js";
 
 class DB {
   saveUser() {}
   updateUser() {}
+  getUser() {}
+  getAllUsers() {}
   saveComplaint() {}
   saveSuggestion() {}
   connect() {}
@@ -27,8 +30,14 @@ class DataBase extends DB {
     return user;
   }
 
+  async getAllUsers() {}
+
   saveComplaint() {}
-  saveSuggestion() {}
+
+  async saveSuggestion(suggestion) {
+    await suggestionSchema.create(suggestion);
+  }
+
   connect() {
     mongoose
       .connect(process.env.CONNECTION_STRING)
