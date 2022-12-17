@@ -5,6 +5,7 @@ dotenv.config();
 // Models
 import userModel from "./model/user.js";
 import suggestionSchema from "./model/suggestion.js";
+import complaintModel from "./model/complaintModel.js";
 
 class DB {
   saveUser() {}
@@ -32,7 +33,9 @@ class DataBase extends DB {
 
   async getAllUsers() {}
 
-  saveComplaint() {}
+  async saveComplaint(complaint) {
+    await complaintModel.create(complaint);
+  }
 
   async saveSuggestion(suggestion) {
     await suggestionSchema.create(suggestion);
