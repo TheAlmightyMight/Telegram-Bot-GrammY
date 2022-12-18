@@ -1,4 +1,3 @@
-import { InlineKeyboard } from "grammy";
 import db from "./db.js";
 
 async function contact(conversation, ctx) {
@@ -26,13 +25,9 @@ async function contact(conversation, ctx) {
       }
 
       await localContext.reply(
-        `Новое сообщение:\n${ctx.message.text}\n.От пользователя ${user.name} ${user.surname}\nuser:${CHAT_ID}.`,
+        `Новое сообщение:\n${ctx.message.text}.\nОт пользователя ${user.name} ${user.surname}\nuser:${USER_ID}.`,
         {
           chat_id: CHAT_ID,
-          reply_markup: new InlineKeyboard().text(
-            "Ответить",
-            "answer_" + USER_ID,
-          ),
         },
       );
     }
@@ -41,8 +36,12 @@ async function contact(conversation, ctx) {
       reply_markup: callContactKeyboard,
     });
     const localContext = await conversation.wait();
+    if (localContext.update.callback_query.data === "no") {
+      await settings(conversation, ctx);
+      return;
+    }
     const user = await db.getUser({ id: USER_ID });
-    const msg = `Поступила новая заявка на звонок!\n Контактные данные: \n Имя - ${user.name} \n Фамилия - ${user.surname} \n Номер - ${user.phone}`;
+    const msg = `Новое сообщение:\n${ctx.message.text}\n.От пользователя ${user.name} ${user.surname}\nuser:${CHAT_ID}.`;
     await localContext.reply(msg, { chat_id: CHAT_ID, parse_mode: "HTML" });
     await localContext.reply("Заявка принята. Перевожу в меню", {
       reply_markup: menuKeyboard,
@@ -52,7 +51,7 @@ async function contact(conversation, ctx) {
     return;
   }
 
-  return;
+  await ctx.reply("Вы вышли из диалога.");
 }
 
 export default contact;
